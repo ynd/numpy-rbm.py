@@ -98,6 +98,20 @@ class RBM(object):
         """
         return 1. / (1. + numpy.exp(-numpy.maximum(numpy.minimum(x, 30), -30)))
     
+    def transform(self, v):
+        """
+        Computes the probabilities P({\bf h}_j=1|{\bf v}).
+        
+        Parameters
+        ----------
+        v: array-like, shape (n_samples, n_visibles)
+
+        Returns
+        -------
+        h: array-like, shape (n_samples, n_hiddens)
+        """
+        return self.mean_h(v)
+    
     def mean_h(self, v):
         """
         Computes the probabilities P({\bf h}_j=1|{\bf v}).
