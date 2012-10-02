@@ -1,13 +1,9 @@
 rbm.py
 ======
 
-A pythonic library for Restricted Boltzmann Machines. This is
-for people who want to give RBMs a quick try and for people
-who want to understand how they are implemented. For this
-purpose I tried to make the code as simple and clean as possible.
-The only dependency is numpy, which is used to perform all
-expensive operations. The code is quite fast, however much better
-performance can be achieved using the Theano version of this code.
+A pythonic library for Restricted Boltzmann Machines (RBMs). RBMs are a state
+of the art method for modeling data. This library is both simple to use and
+efficient. The only dependency is numpy.
 
 Example
 -------

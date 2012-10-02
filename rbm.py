@@ -3,13 +3,9 @@
 """
 rbm.py
 
-A pythonic library for Restricted Boltzmann Machines. This is
-for people who want to give RBMs a quick try and for people
-who want to understand how they are implemented. For this
-purpose I tried to make the code as simple and clean as possible.
-The only dependency is numpy, which is used to perform all
-expensive operations. The code is quite fast, however much better
-performance can be achieved using the Theano version of this code.
+A pythonic library for Restricted Boltzmann Machines (RBMs). RBMs are a state
+of the art method for modeling data. This library is both simple to use and
+efficient. The only dependency is numpy.
 
 Created by Yann N. Dauphin on 2012-01-17.
 Copyright (c) 2012 Yann N. Dauphin. All rights reserved.
@@ -29,13 +25,48 @@ class RBM(object):
     binary hiddens. Parameters are estimated using Stochastic Maximum
     Likelihood (SML).
     
+    Parameters
+    ----------
+    n_hiddens : int, optional
+        Number of binary hidden units
+    epsilon : float, optional
+        Learning rate to use during learning. It is *highly* recommended
+        to tune this hyper-parameter. Possible values are 10**[0., -3.].
+    W : array-like, shape (n_visibles, n_hiddens), optional
+        Weight matrix, where n_visibles in the number of visible
+        units and n_hiddens is the number of hidden units.
+    c : array-like, shape (n_hiddens,), optional
+        Biases of the hidden units
+    b : array-like, shape (n_visibles,), optional
+        Biases of the visible units
+    n_samples : int, optional
+        Number of fantasy particles to use during learning
+    epochs : int, optional
+        Number of epochs to perform during learning
+    
+    Attributes
+    ----------
+    W : array-like, shape (n_visibles, n_hiddens), optional
+        Weight matrix, where n_visibles in the number of visible
+        units and n_hiddens is the number of hidden units.
+    c : array-like, shape (n_hiddens,), optional
+        Biases of the hidden units
+    b : array-like, shape (n_visibles,), optional
+        Biases of the visible units
+    
     Examples
-    ========
+    --------
     
     >>> import numpy, rbm
     >>> X = numpy.array([[0, 0, 0], [0, 1, 1], [1, 0, 1], [1, 1, 1]])
     >>> model = rbm.RBM(n_hiddens=2)
     >>> model.fit(X)
+    
+    References
+    ----------
+    
+    [1] Hinton, G. E., Osindero, S. and Teh, Y. A fast learning algorithm for
+        deep belief nets. Neural Computation 18, pp 1527-1554.
     """
     def __init__(self, n_hiddens=1024,
                        W=None,
@@ -44,27 +75,6 @@ class RBM(object):
                        epsilon=0.1,
                        n_samples=10,
                        epochs=20):
-        """
-        Initialize an RBM.
-        
-        Parameters
-        ----------
-        n_hiddens : int, optional
-            Number of binary hidden units
-        W : array-like, shape (n_visibles, n_hiddens), optional
-            Weight matrix, where n_visibles in the number of visible
-            units and n_hiddens is the number of hidden units.
-        c : array-like, shape (n_hiddens,), optional
-            Biases of the hidden units
-        b : array-like, shape (n_visibles,), optional
-            Biases of the visible units
-        epsilon : float, optional
-            Learning rate to use during learning
-        n_samples : int, optional
-            Number of fantasy particles to use during learning
-        epochs : int, optional
-            Number of epochs to perform during learning
-        """
         self.n_hiddens = n_hiddens
         self.W = W
         self.c = c
