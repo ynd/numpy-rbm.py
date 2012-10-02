@@ -225,8 +225,8 @@ class RBM(object):
         v_neg = self.sample_v(self.h_samples)
         h_neg = self.mean_h(v_neg)
         
-        self.W += self.epsilon / self.n_samples * (numpy.dot(v_pos.T, h_pos)
-            - numpy.dot(v_neg.T, h_neg))
+        self.W += self.epsilon * (numpy.dot(v_pos.T, h_pos)
+            - numpy.dot(v_neg.T, h_neg)) / self.n_samples
         self.b += self.epsilon * (h_pos.mean(0) - h_neg.mean(0))
         self.c += self.epsilon * (v_pos.mean(0) - v_neg.mean(0))
         
