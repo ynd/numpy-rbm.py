@@ -69,10 +69,10 @@ class RBM(object):
         deep belief nets. Neural Computation 18, pp 1527-1554.
     """
     def __init__(self, n_hiddens=1024,
+                       epsilon=0.1,
                        W=None,
                        b=None,
                        c=None,
-                       epsilon=0.1,
                        n_samples=10,
                        epochs=20):
         self.n_hiddens = n_hiddens
@@ -187,27 +187,38 @@ class RBM(object):
         
         return v_
     
-    def _fit(self, v_pos):
+    def _fit(self, v_pos, verbose=True):
         """
         Adjust the parameters to maximize the likelihood of {\bf v}
-        using Stochastic Maximum Likelihood (SML).
+        using Stochastic Maximum Likelihood (SML) [1].
         
         Parameters
         ----------
         v_pos: array-like, shape (n_samples, n_visibles)
+        
+        Returns
+        -------
+        pseudo_likelihood: array-like, shape (n_samples,), optional
+            Pseudo Likelihood estimate for this batch.
+        
+        References
+        ----------
+        [1] Tieleman, T. Training Restricted Boltzmann Machines using
+            Approximations to the Likelihood Gradient. International Conference
+            on Machine Learning (ICML) 2008
         """
         h_pos = self.mean_h(v_pos)
         v_neg = self.sample_v(self.h_samples)
         h_neg = self.mean_h(v_neg)
         
-        p_pos = v_pos[:, :, None] * h_pos[:, None, :]
-        p_neg = v_neg[:, :, None] * h_neg[:, None, :]
-        
-        self.W += self.epsilon * (p_pos.mean(0) - p_neg.mean(0))
+        self.W += self.epsilon / self.n_samples * (numpy.dot(v_pos.T, h_pos)
+            - numpy.dot(v_neg.T, h_neg))
         self.b += self.epsilon * (h_pos.mean(0) - h_neg.mean(0))
         self.c += self.epsilon * (v_pos.mean(0) - v_neg.mean(0))
         
         self.h_samples = numpy.random.binomial(1, h_neg)
+        
+        return self.pseudo_likelihood(v_pos)
     
     def pseudo_likelihood(self, v):
         """
@@ -255,12 +266,12 @@ class RBM(object):
         n_batches = int(numpy.ceil(len(inds) / float(self.n_samples)))
         
         for epoch in range(self.epochs):
+            pl = 0.
             for minibatch in range(n_batches):
-                self._fit(X[inds[minibatch::n_batches]])
+                pl += self._fit(X[inds[minibatch::n_batches]]).sum()
+            pl /= X.shape[0]
             
             if verbose:
-                pl = self.pseudo_likelihood(X).mean()
-            
                 print "Epoch %d, Pseudo-Likelihood = %.2f" % (epoch, pl)
 
 
