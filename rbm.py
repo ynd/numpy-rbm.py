@@ -35,9 +35,9 @@ class RBM(object):
     W : array-like, shape (n_visibles, n_hiddens), optional
         Weight matrix, where n_visibles in the number of visible
         units and n_hiddens is the number of hidden units.
-    c : array-like, shape (n_hiddens,), optional
+    b : array-like, shape (n_hiddens,), optional
         Biases of the hidden units
-    b : array-like, shape (n_visibles,), optional
+    c : array-like, shape (n_visibles,), optional
         Biases of the visible units
     n_samples : int, optional
         Number of fantasy particles to use during learning
@@ -49,9 +49,9 @@ class RBM(object):
     W : array-like, shape (n_visibles, n_hiddens), optional
         Weight matrix, where n_visibles in the number of visible
         units and n_hiddens is the number of hidden units.
-    c : array-like, shape (n_hiddens,), optional
+    b : array-like, shape (n_hiddens,), optional
         Biases of the hidden units
-    b : array-like, shape (n_visibles,), optional
+    c : array-like, shape (n_visibles,), optional
         Biases of the visible units
     
     Examples
@@ -70,15 +70,15 @@ class RBM(object):
     """
     def __init__(self, n_hiddens=1024,
                        W=None,
-                       c=None,
                        b=None,
+                       c=None,
                        epsilon=0.1,
                        n_samples=10,
                        epochs=20):
         self.n_hiddens = n_hiddens
         self.W = W
-        self.c = c
         self.b = b
+        self.c = c
         self.epsilon = epsilon
         self.n_samples = n_samples
         self.epochs = epochs
@@ -110,7 +110,7 @@ class RBM(object):
         -------
         h: array-like, shape (n_samples, n_hiddens)
         """
-        return self._sigmoid(numpy.dot(v, self.W) + self.c)
+        return self._sigmoid(numpy.dot(v, self.W) + self.b)
     
     def sample_h(self, v):
         """
@@ -138,7 +138,7 @@ class RBM(object):
         -------
         v: array-like, shape (n_samples, n_visibles)
         """
-        return self._sigmoid(numpy.dot(h, self.W.T) + self.b)
+        return self._sigmoid(numpy.dot(h, self.W.T) + self.c)
     
     def sample_v(self, h):
         """
@@ -167,8 +167,8 @@ class RBM(object):
         -------
         free_energy: array-like, shape (n_samples,)
         """
-        return - numpy.dot(v, self.b) \
-            - numpy.log(1. + numpy.exp(numpy.dot(v, self.W) + self.c)).sum(1)
+        return - numpy.dot(v, self.c) \
+            - numpy.log(1. + numpy.exp(numpy.dot(v, self.W) + self.b)).sum(1)
     
     def gibbs(self, v):
         """
@@ -204,8 +204,8 @@ class RBM(object):
         p_neg = v_neg[:, :, None] * h_neg[:, None, :]
         
         self.W += self.epsilon * (p_pos.mean(0) - p_neg.mean(0))
-        self.c += self.epsilon * (h_pos.mean(0) - h_neg.mean(0))
-        self.b += self.epsilon * (v_pos.mean(0) - v_neg.mean(0))
+        self.b += self.epsilon * (h_pos.mean(0) - h_neg.mean(0))
+        self.c += self.epsilon * (v_pos.mean(0) - v_neg.mean(0))
         
         self.h_samples = numpy.random.binomial(1, h_neg)
     
@@ -242,8 +242,8 @@ class RBM(object):
         """
         if self.W == None:
             self.W = numpy.random.normal(0, 0.01, (X.shape[1], self.n_hiddens))
-            self.c = numpy.zeros(self.n_hiddens)
-            self.b = numpy.zeros(X.shape[1])
+            self.b = numpy.zeros(self.n_hiddens)
+            self.c = numpy.zeros(X.shape[1])
             self.h_samples = numpy.zeros((self.n_samples, self.n_hiddens))
         
         inds = range(X.shape[0])
