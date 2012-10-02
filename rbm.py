@@ -25,6 +25,9 @@ class RBM(object):
     binary hiddens. Parameters are estimated using Stochastic Maximum
     Likelihood (SML).
     
+    The time complexity of this implementation is ``O(n ** 2)`` assuming
+    n ~ n_samples ~ n_features.
+    
     Parameters
     ----------
     n_hiddens : int, optional
