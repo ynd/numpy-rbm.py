@@ -241,10 +241,12 @@ class RBM(object):
             and n_features is the number of features.
         """
         if self.W == None:
-            self.W = numpy.random.normal(0, 0.01, (X.shape[1], self.n_hiddens))
-            self.b = numpy.zeros(self.n_hiddens)
-            self.c = numpy.zeros(X.shape[1])
-            self.h_samples = numpy.zeros((self.n_samples, self.n_hiddens))
+            self.W = numpy.asarray(numpy.random.normal(0, 0.01,
+                (X.shape[1], self.n_hiddens)), dtype=X.dtype)
+            self.b = numpy.zeros(self.n_hiddens, dtype=X.dtype)
+            self.c = numpy.zeros(X.shape[1], dtype=X.dtype)
+            self.h_samples = numpy.zeros((self.n_samples, self.n_hiddens),
+                dtype=X.dtype)
         
         inds = range(X.shape[0])
         
