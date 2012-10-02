@@ -96,7 +96,7 @@ class RBM(object):
         -------
         x_new: array-like, shape (M, N)
         """
-        return 1. / (1. + numpy.exp(-x)) 
+        return 1. / (1. + numpy.exp(-numpy.maximum(numpy.minimum(x, 30), -30)))
     
     def mean_h(self, v):
         """
