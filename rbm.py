@@ -74,7 +74,7 @@ class RBM(object):
                        b=None,
                        c=None,
                        n_samples=10,
-                       epochs=20):
+                       epochs=10):
         self.n_hiddens = n_hiddens
         self.W = W
         self.b = b
